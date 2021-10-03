@@ -1,0 +1,8 @@
+#!bin/sh
+
+echo "Welcome to setup master!"
+echo "Choose a branch:"
+echo "	alpinehost"
+echo "	dailyarcher"
+read branch
+git checkout $branch
