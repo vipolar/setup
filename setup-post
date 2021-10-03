@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 
 # Install X, base-devel files/tools, audio, and everything virtualization
 setup-xorg-base dbus-x11 xrandr
@@ -39,14 +39,8 @@ cd executables
 	make install
 	cd ..
 
-# Back to alpinehost
+# Back to main directory
 cd ..
-
-# Drop X configs in
-cp -a -f xfiles/. /etc/X11/xorg.conf.d
-
-# Fix unicode defaults
-sed -i s/#unicode="NO"\n\n#/#unicode="NO"\n\nunicode="YES"\n\n#/ /etc/rc.conf
 
 # Add a user and give them privileges
 echo "Add a new user: " && read username
@@ -55,12 +49,23 @@ echo "$username ALL=(ALL) ALL" > /etc/sudoers.d/$username
 chmod 0440 /etc/sudoers.d/$username
 passwd $username
 
-# Login as the new user, install OhMyZsh and configure dotfiles
-homedir=$(awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd) && su $username && cd $homedir
-ash -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# Copy X configs
+cp -a -f xfiles/. /etc/X11/xorg.conf.d
+
+# Copy and link dotfiles
+homedir=$(awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd)
+mkdir -p $homedir/.config/$username/
+cp -a -f dotfiles/. $homedir/.config/$username/
+ln -sf $homedir/.config/$username/.* $homedir/
+
+# Fix unicode defaults
+sed -i s/#unicode="NO"\n\n#/#unicode="NO"\n\nunicode="YES"\n\n#/ /etc/rc.conf
+
+# Install OhMyZsh
+su $username && cd $homedir
+zsh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="bira"/' .zshrc
 sed -i 's/plugins=(git)/plugins=(git sudo)/' .zshrc
-echo "exec dwm" > .xinitrc
 
 # Final words
 echo "===================================================="
