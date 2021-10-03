@@ -1,8 +1,8 @@
 #!bin/sh
 
-echo "Welcome to setup master!"
-echo "Choose a branch:"
+echo "Welcome to setup master, choose the branch:"
 echo "	alpinehost"
 echo "	dailyarcher"
 read branch
 git checkout $branch
+echo "Proceed with setup-post as root"
