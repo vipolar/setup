@@ -58,15 +58,14 @@ mkdir -p $homedir/.config/$username/
 cp -a -f dotfiles/. $homedir/.config/$username/
 ln -sf $homedir/.config/$username/.* $homedir/
 
-
-# Install OhMyZsh
+# Install and configure OhMyZsh
 fgGreen='%{$fg[green]%}'
 fgCyan='%{$fg[cyan]%}'
 fgReset='%{$reset_color%}'
 retStatus='${ret_status}'
 gitInfo='$(git_prompt_info)'
-su $username -c 'sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
-su $username -c "echo export PROMPT=\''${fgGreen}%n@%m${fgReset} ${retStatus} ${fgCyan}%c${fgReset} ${gitInfo}'\'" >> $homedir/.zshrc
+su -l $username -c 'sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
+echo "export PROMPT='${fgGreen}%n@%m${fgReset} ${retStatus} ${fgCyan}%c${fgReset} ${gitInfo}'" >> $homedir/.zshrc
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="bira"/' $homedir/.zshrc
 sed -i 's/plugins=(git)/plugins=(git sudo)/' $homedir/.zshrc
 
