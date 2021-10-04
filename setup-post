@@ -72,8 +72,8 @@ homedir=$(awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd)
 mkdir -p $homedir/.config/$username/
 cp -a -f dotfiles/. $homedir/.config/$username/
 ln -sf $homedir/.config/$username/.* $homedir/
-chown -R $username $homedir/.config/
-read
+chown -R $username:users $homedir/.config/
+
 # Install and configure OhMyZsh
 fgGreen='%{$fg[green]%}'
 fgCyan='%{$fg[cyan]%}'
@@ -86,5 +86,6 @@ sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="bira"/' $homedir/.zshrc
 sed -i 's/plugins=(git)/plugins=(git sudo)/' $homedir/.zshrc
 
 echo "====================================================="
-echo "Finished! Press ENTER to reboot..." && read && reboot
+echo "Installation finished successfully! Press ENTER to..." 
 echo "====================================================="
+read && reboot
