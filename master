@@ -5,4 +5,5 @@ echo "	alpinehost"
 echo "	dailyarcher"
 read branch
 git checkout $branch
-echo "Proceed with setup-post as root"
+echo "(NEED TO BE ROOT!) Press ENTER to proceed with the install script..."
+read && sh setup-post
