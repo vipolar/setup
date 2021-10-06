@@ -2,21 +2,21 @@
 
 imgsize="50G"
 imgfmt="qcow2"
-imgname="vmWin10"
+imgname="vmArcher"
 imgpalloc="full"
 imgdirectory="~"
 imgfulladdress="$imgdirectory/$imgname.$imgfmt"
 
 qemu-img create -f $imgfmt -o preallocation=$imgpalloc $imgfulladdress $imgsize
 
-vmname="Windows10"
-vmdesc="Windows10 workstation"
-vmostype="Windows"
-vmosvariant="win10"
-vminstaller="ISO/windows_10_pro_en-US_v1909_x64.iso"
+vmname="Archer"
+vmdesc="Arch daily driver"
+vmostype="Linux"
+vmosvariant="archlinux"
+vminstaller="ISO/archlinux-2021.09.01-x86_64.iso"
 vmdiskpath=$imgfulladdress
 vmvcpus="2"
-vmram="3456"
+vmram="2560"
 vmarch="x86_64"
 vmtype="kvm"
 vmgraphics="spice"
