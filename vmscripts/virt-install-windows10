@@ -23,16 +23,16 @@ vmgraphics="spice"
 vmnetwork="network:default"
 
 sudo virt-install \
-	--name=$vmname \
-	--description=$vmdesc \
-	--os-type=$vmostype \
-	--os-variant=$vmosvariant \
-	--cdrom=$vminstaller \
-	--disk path=$vmdiskpath \
-	--vcpus=$vmvcpus \
-	--ram=$vmram \
+	--name="$vmname" \
+	--description="$vmdesc" \
+	--os-type="$vmostype" \
+	--os-variant="$vmosvariant" \
+	--cdrom="$vminstaller" \
+	--disk path="$vmdiskpath" \
+	--vcpus="$vmvcpus" \
+	--ram="$vmram" \
 	--check-cpu \
-	--arch=$vmarch \
-	--virt-type=$vmtype \
-	--graphics=$vmgraphics \
-	--network=$vmnetwork
+	--arch="$vmarch" \
+	--virt-type="$vmtype" \
+	--graphics="$vmgraphics" \
+	--network="$vmnetwork"
