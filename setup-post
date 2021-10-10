@@ -10,16 +10,20 @@ apk add g++ zsh htop make shadow ncurses \
 	libx11-dev libxft-dev libxinerama-dev \
 	xf86-video-intel xf86-input-synaptics \
 	qemu qemu-img qemu-modules qemu-system-x86_64 \
-	libvirt virt-viewer virt-install libvirt-daemon \
-	pulseaudio pulseaudio-alsa alsa-plugins-pulse \
-	alsa-utils alsa-lib alsaconf umix \
-	ttf-liberation ttf-font-awesome \
-	sudo gvim file ranger
+	libvirt virt-manager virt-install libvirt-daemon \
+	sudo gvim file ranger ttf-dejavu \
+	alsa-utils alsa-lib alsaconf \
+	polkit
+
+# Install virt-viewer from edge repository (temporary fix)
+wget -O virt-viewer-edge.apk http://dl-cdn.alpinelinux.org/alpine/edge/community/x86_64/virt-viewer-9.0-r2.apk
+apk add --allow-untrusted virt-viewer-edge.apk
 
 # Enable services
 rc-update add libvirtd
-rc-update add alsa
+rc-update add polkit
 rc-update add dbus
+rc-update add alsa
 
 echo "====================================================="
 echo "Packages installed. Compiling the rest from source..."
@@ -50,22 +54,29 @@ cd executables
 # Back to main directory
 cd ..
 
+# Remove developer tools used for compiling from source
+apk del g++ gcc git make ncurses libx11-dev libxft-dev libxinerama-dev
+
 echo "====================================================="
 echo "Sources compiled. Adding user and editing dotfiles..."
 echo "====================================================="
 
 # Add a user and give them privileges
 echo "Enter username for a new user: " && read username
-useradd -m -g users -G kvm,wheel,libvirt,video,audio,input -s /bin/zsh $username
+useradd -m -g users -G wheel,video,audio,input,kvm,qemu,libvirt -s /bin/zsh $username
 echo "$username ALL=(ALL) ALL" > /etc/sudoers.d/$username
 chmod 0440 /etc/sudoers.d/$username
 passwd $username
 
-# Fix unicode defaults
+# Fix unicode defaults and update font cache
 sed -i s/#unicode="NO"\n\n#/#unicode="NO"\n\nunicode="YES"\n\n#/ /etc/rc.conf
+fc-cache -fv
 
 # Copy X configs
 cp -a -f xfiles/. /etc/X11/xorg.conf.d
+
+# Copy polkit files
+cp -a -f polkitfiles/. etc/polkit-1/rules.d/
 
 # Copy and link dotfiles
 homedir=$(awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd)
@@ -73,6 +84,10 @@ mkdir -p $homedir/.config/$username/
 cp -a -f dotfiles/. $homedir/.config/$username/
 ln -sf $homedir/.config/$username/.* $homedir/
 chown -R $username:users $homedir/.config/
+
+# Copy vmscripts folder to homedir
+cp -a -f -r vmscripts $homedir/
+chown -R $username:users $homedir/vmscripts/
 
 # Install and configure OhMyZsh
 fgGreen='%{$fg[green]%}'

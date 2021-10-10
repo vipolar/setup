@@ -4,7 +4,7 @@ imgsize="50G"
 imgfmt="qcow2"
 imgname="vmWin10"
 imgpalloc="full"
-imgdirectory="~"
+imgdirectory="$HOME"
 imgfulladdress="$imgdirectory/$imgname.$imgfmt"
 
 qemu-img create -f $imgfmt -o preallocation=$imgpalloc $imgfulladdress $imgsize

@@ -1,6 +1,9 @@
-#!/bin/zsh
+#!/bin/sh
 
 for i in `sudo virsh list | grep running | awk '{print $2}'` do
 	sudo virsh shutdown $i
+done
+
+for i in `sudo virsh list | grep running | awk '{print $2}'` do
 	sudo virsh destroy $i
 done

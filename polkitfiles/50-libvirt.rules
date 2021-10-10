@@ -1,0 +1,9 @@
+/* Allow users in appropriate groups to manage the libvirt daemon without authentication */
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.libvirt.unix.manage" &&
+        (subject.isInGroup("wheel") ||
+        (subject.isInGroup("kvm") && subject.isInGroup("qemu") && subject.isInGroup("libvirt")))) {
+            return polkit.Result.YES;
+    }
+});
+
