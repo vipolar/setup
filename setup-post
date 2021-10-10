@@ -54,9 +54,6 @@ cd executables
 # Back to main directory
 cd ..
 
-# Remove developer tools used for compiling from source
-apk del g++ gcc git make ncurses libx11-dev libxft-dev libxinerama-dev
-
 echo "====================================================="
 echo "Sources compiled. Adding user and editing dotfiles..."
 echo "====================================================="
@@ -68,26 +65,8 @@ echo "$username ALL=(ALL) ALL" > /etc/sudoers.d/$username
 chmod 0440 /etc/sudoers.d/$username
 passwd $username
 
-# Fix unicode defaults and update font cache
-sed -i s/#unicode="NO"\n\n#/#unicode="NO"\n\nunicode="YES"\n\n#/ /etc/rc.conf
-fc-cache -fv
-
-# Copy X configs
-cp -a -f xfiles/. /etc/X11/xorg.conf.d
-
-# Copy polkit files
-cp -a -f polkitfiles/. etc/polkit-1/rules.d/
-
-# Copy and link dotfiles
+# Find homedir of the new user
 homedir=$(awk -F: -v v="$username" '{if ($1==v) print $6}' /etc/passwd)
-mkdir -p $homedir/.config/$username/
-cp -a -f dotfiles/. $homedir/.config/$username/
-ln -sf $homedir/.config/$username/.* $homedir/
-chown -R $username:users $homedir/.config/
-
-# Copy vmscripts folder to homedir
-cp -a -f -r vmscripts $homedir/
-chown -R $username:users $homedir/vmscripts/
 
 # Install and configure OhMyZsh
 fgGreen='%{$fg[green]%}'
@@ -100,7 +79,34 @@ echo "# export PROMPT='${fgGreen}%n@%m${fgReset} ${retStatus} ${fgCyan}%c${fgRes
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="bira"/' $homedir/.zshrc
 sed -i 's/plugins=(git)/plugins=(git sudo)/' $homedir/.zshrc
 
+# Fix unicode defaults and update font cache
+sed -i s/#unicode="NO"\n\n#/#unicode="NO"\n\nunicode="YES"\n\n#/ /etc/rc.conf
+fc-cache -fv
+
+# Copy X configs
+cp -a -f xfiles/. /etc/X11/xorg.conf.d
+
+# Copy polkit files
+cp -a -f polkitfiles/. etc/polkit-1/rules.d/
+
+# Copy and link dotfiles
+mkdir -p $homedir/.config/$username/
+cp -a -f dotfiles/. $homedir/.config/$username/
+ln -sf $homedir/.config/$username/.* $homedir/
+chown -R $username:users $homedir/.config/
+
+# Copy vmscripts folder to homedir
+cp -a -f -r vmscripts $homedir/
+chown -R $username:users $homedir/vmscripts/
+
 echo "====================================================="
-echo "Installation finished successfully! Press ENTER to..." 
+echo "Installation finished! Removing dev-tools and else..." 
+echo "====================================================="
+
+# Remove developer tools used for compiling from source
+apk del g++ gcc git make ncurses libx11-dev libxft-dev libxinerama-dev
+
+echo "====================================================="
+echo "Setup finished! Press ENTER to restart the machine..." 
 echo "====================================================="
 read && reboot
