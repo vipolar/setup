@@ -51,7 +51,10 @@ fi
 pacman -Syu
 
 # Remove orphaned packages
-pacman -Rns $(pacman -Qtdq)
+ORPHANEDPACKAGES=$(pacman -Qtdq)
+if [ -n "$ORPHANEDPACKAGES" ]; then
+	pacman -Rns $ORPHANEDPACKAGES
+fi
 
 # Clear cache
 pacman -Sc
